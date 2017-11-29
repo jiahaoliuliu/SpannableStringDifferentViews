@@ -7,7 +7,8 @@ import android.widget.TextView;
 
 /**
  * Simple example of how to use Spannable String in Android. This is based on:
- * http://androidcocktail.blogspot.ae/2014/03/android-spannablestring-example.html
+ * https://stackoverflow.com/questions/19292838/android-spannablestring-set-background-behind-part-of-text
+ * https://stackoverflow.com/questions/27198155/adding-a-padding-margin-to-a-spannable
  */
 public class MainActivity extends AppCompatActivity {
 
