@@ -21,6 +21,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Simple example of how to use Spannable String in Android. This is based on:
+ * http://androidcocktail.blogspot.ae/2014/03/android-spannablestring-example.html
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         // subscript
         spannableString.setSpan(new SubscriptSpan(), 87, 96, 0);
-        
+
         // make the subscript text smaller
         spannableString.setSpan(new RelativeSizeSpan(0.5f), 87, 96, 0);
 
