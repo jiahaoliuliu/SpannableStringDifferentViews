@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
+import android.util.Log;
 import android.widget.TextView;
 
 /**
@@ -13,8 +14,9 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "SpannableString";
     private static final String ORIGINAL_TEXT = "This text should be highlighted";
-    private static final int WORD_POSITION_TO_BE_HIGHLIGHTED_FROM_END = 2;
+    private static final String WORD_TO_BE_HIGHLIGHTED = "should";
     private static final int HIGHLIGHT_COLOR_RESOURCE = R.color.highLightedColor;
     private static final int TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE = android.R.color.white;
 
@@ -27,24 +29,50 @@ public class MainActivity extends AppCompatActivity {
         TextView spannableTV = findViewById(R.id.spannable_tv);
 
         spannableTV.setText(
-                createSpannableString(this, ORIGINAL_TEXT, WORD_POSITION_TO_BE_HIGHLIGHTED_FROM_END,
+                createSpannableString(this, ORIGINAL_TEXT, WORD_TO_BE_HIGHLIGHTED,
                         HIGHLIGHT_COLOR_RESOURCE, TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE));
     }
 
+    /**
+     * Create a spannable string with some text highlighted. The highlight starts counting the words
+     * from the end
+     * @param context
+     *      The context needed to get the highlight colours
+     * @param text
+     *      The text to be highlighted
+     * @param wordToBeHighlighted
+     *      The word to be highlighted. Note this word should be part of the text
+     * @param highlightColor
+     *      The color of the highlight (background color)
+     * @param textColor
+     *      The color of the text after highlight. This should contrast wit the highlight color
+     * @return
+     *      Spannable string with the text highlighted
+     */
     private SpannableString createSpannableString(
-            Context context, String text, int wordPositionCountingFromEnd, int highlightColor,
-                                                           int textColor) {
-        String convertedText = convertTextForHighLight(text, wordPositionCountingFromEnd);
+            Context context, String text, String wordToBeHighlighted,
+            int highlightColor,int textColor) {
+        String convertedText = convertTextForHighlight(text, wordToBeHighlighted);
 
-        SpannableString spannableString =
-                new SpannableString(convertedText);
+        // If there were some problem on converting the text, then don't do anything
+        if (convertedText == null) {
+            Log.e(TAG, "Error converting the text");
+            return new SpannableString(text);
+        }
 
-        int lastWordStartPosition = getWordStartPosition(convertedText, wordPositionCountingFromEnd);
+        SpannableString spannableString = new SpannableString(convertedText);
+
+        int highlightWordStartPosition = getHighlightWordStartPosition(convertedText, wordToBeHighlighted);
+
+        if (highlightWordStartPosition < 0) {
+            Log.e(TAG, "Error getting the highlight word start position");
+            return new SpannableString(text);
+        }
 
         spannableString.setSpan(
                 new RoundedBackgroundSpan(context.getResources().getColor(highlightColor),
-                        context.getResources().getColor(textColor)),
-                lastWordStartPosition, spannableString.length(), 0);
+                        context.getResources().getColor(textColor)), highlightWordStartPosition,
+                highlightWordStartPosition + wordToBeHighlighted.length() + 2, 0);
 
         return spannableString;
     }
@@ -54,14 +82,20 @@ public class MainActivity extends AppCompatActivity {
      * at the beginning at the bottom of the last word
      * @param originalText
      *      The original text to be converted
+     * @param wordToBeHighlighted
+     *      The word to be highlighted
      * @return
      *      The converted text to have the last word highlighted
      */
-    private String convertTextForHighLight(String originalText, int wordPositionCountingFromEnd) {
-        String[] words = originalText.split(" ");
+    private String convertTextForHighlight(String originalText, String wordToBeHighlighted) {
+        String wordToBeHighlightedTrimmed = wordToBeHighlighted.trim();
 
         int highlighterTextStartPosition =
-                originalText.indexOf(words[words.length-wordPositionCountingFromEnd]);
+                originalText.indexOf(wordToBeHighlightedTrimmed);
+
+        if (highlighterTextStartPosition < 0) {
+            return null;
+        }
 
         // Get the first part of the text
         String convertedText =
@@ -71,10 +105,16 @@ public class MainActivity extends AppCompatActivity {
         // 4 white space at the beginning = original white space + space for the margins
         convertedText += "    ";
 
-        // Attach the rest of the words
-        convertedText +=
-                originalText.substring(
-                        highlighterTextStartPosition, originalText.length()) + " ";
+        // Attach the highlighted text
+        convertedText += wordToBeHighlighted;
+
+        // Attach some spaces at the end
+        convertedText += "  ";
+
+        // Attach the rest of the word
+        convertedText += originalText.substring(
+                originalText.indexOf(wordToBeHighlighted) + wordToBeHighlighted.length(),
+                originalText.length());
 
         return convertedText;
     }
@@ -84,13 +124,18 @@ public class MainActivity extends AppCompatActivity {
      * before the index of the last word. That extra space is used for padding
      * @param text
      *      The text to check
+     * @param wordToBeHighlighted
+     *      The word to be highlighted
      * @return
      *      The position on the text which the highlight should start
      */
-    private int getWordStartPosition(String text, int wordPositionCountingFromEnd) {
-        String[] words = text.split(" ");
+    private int getHighlightWordStartPosition(String text, String wordToBeHighlighted) {
+        int index = text.indexOf(wordToBeHighlighted);
+        if (index < 0) {
+            return index;
+        }
 
-        return text.indexOf(words[words.length - wordPositionCountingFromEnd]) - 1;
+        return index - 1;
     }
 
 }
