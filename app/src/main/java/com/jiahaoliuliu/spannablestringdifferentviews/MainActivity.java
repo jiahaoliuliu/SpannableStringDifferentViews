@@ -1,11 +1,8 @@
 package com.jiahaoliuliu.spannablestringdifferentviews;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 import android.widget.TextView;
 
 /**
@@ -13,6 +10,8 @@ import android.widget.TextView;
  * http://androidcocktail.blogspot.ae/2014/03/android-spannablestring-example.html
  */
 public class MainActivity extends AppCompatActivity {
+
+    private static final String ORIGINAL_TEXT = "This text should be highlighted";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,32 +25,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private SpannableString createAndModifySpannableString() {
-        String text = "This text should be highlighted";
+        String convertedText = convertTextForHighLight(ORIGINAL_TEXT);
 
         SpannableString spannableString =
-                new SpannableString(text);
+                new SpannableString(convertedText);
 
-        int lastStringStartPosition = getLastStringStartPosition(text);
+        int lastWordStartPosition = getLastWordStartPosition(convertedText);
 
-        // change text color
-        spannableString.setSpan(new ForegroundColorSpan(Color.WHITE), lastStringStartPosition,
-                spannableString.length(), 0);
-
-        // highlight text
         spannableString.setSpan(
-                new BackgroundColorSpan(getColorFromResources(R.color.highLightedColor)),
-                lastStringStartPosition, spannableString.length(), 0);
+                new RoundedBackgroundSpan(getColorFromResources(R.color.highLightedColor),
+                        getColorFromResources(android.R.color.white)),
+                lastWordStartPosition, spannableString.length(), 0);
 
         return spannableString;
     }
 
-    private int getLastStringStartPosition(String text) {
+    /**
+     * Return the position that the last word should start. This is one position
+     * before the index of the last word. That extra space is used for padding
+     * @param text
+     *      The text to check
+     * @return
+     *      The position on the text which the highlight should start
+     */
+    private int getLastWordStartPosition(String text) {
         String[] words = text.split(" ");
 
-        return text.indexOf(words[words.length-1]);
+        return text.indexOf(words[words.length-1]) - 1;
     }
 
     private int getColorFromResources(int res) {
         return getResources().getColor(res);
+    }
+
+    /**
+     * Convert the original text for highlight. Basically some extra space is added
+     * at the beginning at the bottom of the last word
+     * @param originalText
+     *      The original text to be converted
+     * @return
+     *      The converted text to have the last word highlighted
+     */
+    private String convertTextForHighLight(String originalText) {
+        String[] words = originalText.split(" ");
+
+        // Get the first part of the text
+        String convertedText =
+                originalText.substring(0, originalText.indexOf(words[words.length-1]));
+
+        // Add the last word and some white spaces
+        // 4 white space at the beginning = original white space + space for the margins
+        // 1 white space at the end
+        convertedText += "    " + words[words.length -1] + " ";
+
+        return convertedText;
     }
 }
