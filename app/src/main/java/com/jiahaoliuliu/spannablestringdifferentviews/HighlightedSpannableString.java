@@ -7,6 +7,7 @@ import android.util.Log;
 
 /**
  * Created by jiahaoliu on 11/29/17.
+ * TODO: Set it case insensitive
  * This is based on:
  * https://stackoverflow.com/questions/19292838/android-spannablestring-set-background-behind-part-of-text
  * https://stackoverflow.com/questions/27198155/adding-a-padding-margin-to-a-spannable

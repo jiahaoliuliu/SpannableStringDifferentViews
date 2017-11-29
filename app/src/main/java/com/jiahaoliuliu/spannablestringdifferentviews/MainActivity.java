@@ -12,7 +12,6 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private static final String ORIGINAL_TEXT = "This text should be highlighted";
-    // TODO: Set it case insensitive
     private static final String WORD_TO_BE_HIGHLIGHTED = "text";
     private static final int HIGHLIGHT_COLOR_RESOURCE = R.color.highLightedColor;
     private static final int TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE = android.R.color.white;
