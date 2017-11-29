@@ -6,11 +6,23 @@ import android.text.SpannableString;
 import android.util.Log;
 
 /**
- * Created by jiahaoliu on 11/29/17.
- * TODO: Set it case insensitive
+ * Created by jiahaoliuliu on 11/29/17.
+ * Special class that extends from SpannableString, which by providing
+ * <ul>
+ * <li> the application context</li>
+ * <li> the original text </li>
+ * <li> the word to be highlighted </li>
+ * <li> [Optional] the highlight colour </li>
+ * <li> [Optional] the text color </li>
+ * </ul>
+ * Will highlight the desired text. <br>
+ *
+ * TODO: Set it case insensitive <br>
  * This is based on:
- * https://stackoverflow.com/questions/19292838/android-spannablestring-set-background-behind-part-of-text
- * https://stackoverflow.com/questions/27198155/adding-a-padding-margin-to-a-spannable
+ * <ul>
+ * <li>https://stackoverflow.com/questions/19292838/android-spannablestring-set-background-behind-part-of-text</li>
+ * <li>https://stackoverflow.com/questions/27198155/adding-a-padding-margin-to-a-spannable</li>
+ * </ul>
  */
 public class HighlightedSpannableString extends SpannableString {
 
