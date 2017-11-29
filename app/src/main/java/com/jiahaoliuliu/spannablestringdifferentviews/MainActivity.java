@@ -1,5 +1,6 @@
 package com.jiahaoliuliu.spannablestringdifferentviews;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
@@ -13,6 +14,9 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private static final String ORIGINAL_TEXT = "This text should be highlighted";
+    private static final int WORD_POSITION_TO_BE_HIGHLIGHTED_FROM_END = 2;
+    private static final int HIGHLIGHT_COLOR_RESOURCE = R.color.highLightedColor;
+    private static final int TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE = android.R.color.white;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,41 +26,27 @@ public class MainActivity extends AppCompatActivity {
         // Link the view
         TextView spannableTV = findViewById(R.id.spannable_tv);
 
-        spannableTV.setText(createAndModifySpannableString());
+        spannableTV.setText(
+                createSpannableString(this, ORIGINAL_TEXT, WORD_POSITION_TO_BE_HIGHLIGHTED_FROM_END,
+                        HIGHLIGHT_COLOR_RESOURCE, TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE));
     }
 
-    private SpannableString createAndModifySpannableString() {
-        String convertedText = convertTextForHighLight(ORIGINAL_TEXT);
+    private SpannableString createSpannableString(
+            Context context, String text, int wordPositionCountingFromEnd, int highlightColor,
+                                                           int textColor) {
+        String convertedText = convertTextForHighLight(text, wordPositionCountingFromEnd);
 
         SpannableString spannableString =
                 new SpannableString(convertedText);
 
-        int lastWordStartPosition = getLastWordStartPosition(convertedText);
+        int lastWordStartPosition = getWordStartPosition(convertedText, wordPositionCountingFromEnd);
 
         spannableString.setSpan(
-                new RoundedBackgroundSpan(getColorFromResources(R.color.highLightedColor),
-                        getColorFromResources(android.R.color.white)),
+                new RoundedBackgroundSpan(context.getResources().getColor(highlightColor),
+                        context.getResources().getColor(textColor)),
                 lastWordStartPosition, spannableString.length(), 0);
 
         return spannableString;
-    }
-
-    /**
-     * Return the position that the last word should start. This is one position
-     * before the index of the last word. That extra space is used for padding
-     * @param text
-     *      The text to check
-     * @return
-     *      The position on the text which the highlight should start
-     */
-    private int getLastWordStartPosition(String text) {
-        String[] words = text.split(" ");
-
-        return text.indexOf(words[words.length-1]) - 1;
-    }
-
-    private int getColorFromResources(int res) {
-        return getResources().getColor(res);
     }
 
     /**
@@ -67,18 +57,40 @@ public class MainActivity extends AppCompatActivity {
      * @return
      *      The converted text to have the last word highlighted
      */
-    private String convertTextForHighLight(String originalText) {
+    private String convertTextForHighLight(String originalText, int wordPositionCountingFromEnd) {
         String[] words = originalText.split(" ");
+
+        int highlighterTextStartPosition =
+                originalText.indexOf(words[words.length-wordPositionCountingFromEnd]);
 
         // Get the first part of the text
         String convertedText =
-                originalText.substring(0, originalText.indexOf(words[words.length-1]));
+                originalText.substring(0, highlighterTextStartPosition);
 
         // Add the last word and some white spaces
         // 4 white space at the beginning = original white space + space for the margins
-        // 1 white space at the end
-        convertedText += "    " + words[words.length -1] + " ";
+        convertedText += "    ";
+
+        // Attach the rest of the words
+        convertedText +=
+                originalText.substring(
+                        highlighterTextStartPosition, originalText.length()) + " ";
 
         return convertedText;
     }
+
+    /**
+     * Return the position that the last word should start. This is one position
+     * before the index of the last word. That extra space is used for padding
+     * @param text
+     *      The text to check
+     * @return
+     *      The position on the text which the highlight should start
+     */
+    private int getWordStartPosition(String text, int wordPositionCountingFromEnd) {
+        String[] words = text.split(" ");
+
+        return text.indexOf(words[words.length - wordPositionCountingFromEnd]) - 1;
+    }
+
 }
