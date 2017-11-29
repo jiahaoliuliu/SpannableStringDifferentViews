@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
             int highlightColor,int textColor) {
         String convertedText = convertTextForHighlight(text, wordToBeHighlighted);
 
-        // If there were some problem on converting the text, then don't do anything
         if (convertedText == null) {
             Log.e(TAG, "Error converting the text");
             return new SpannableString(text);
@@ -62,13 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         SpannableString spannableString = new SpannableString(convertedText);
 
-        int highlightWordStartPosition = getHighlightWordStartPosition(convertedText, wordToBeHighlighted);
-
-        if (highlightWordStartPosition < 0) {
-            Log.e(TAG, "Error getting the highlight word start position");
-            return new SpannableString(text);
-        }
-
+        int highlightWordStartPosition = getWordToBeHighlightedPosition(convertedText, wordToBeHighlighted) - 1;
         spannableString.setSpan(
                 new RoundedBackgroundSpan(context.getResources().getColor(highlightColor),
                         context.getResources().getColor(textColor)), highlightWordStartPosition,
@@ -88,11 +81,9 @@ public class MainActivity extends AppCompatActivity {
      *      The converted text to have the last word highlighted
      */
     private String convertTextForHighlight(String originalText, String wordToBeHighlighted) {
-        String wordToBeHighlightedTrimmed = wordToBeHighlighted.trim();
 
         int highlighterTextStartPosition =
-                originalText.indexOf(wordToBeHighlightedTrimmed);
-
+                getWordToBeHighlightedPosition(originalText, wordToBeHighlighted);
         if (highlighterTextStartPosition < 0) {
             return null;
         }
@@ -119,23 +110,8 @@ public class MainActivity extends AppCompatActivity {
         return convertedText;
     }
 
-    /**
-     * Return the position that the last word should start. This is one position
-     * before the index of the last word. That extra space is used for padding
-     * @param text
-     *      The text to check
-     * @param wordToBeHighlighted
-     *      The word to be highlighted
-     * @return
-     *      The position on the text which the highlight should start
-     */
-    private int getHighlightWordStartPosition(String text, String wordToBeHighlighted) {
-        int index = text.indexOf(wordToBeHighlighted);
-        if (index < 0) {
-            return index;
-        }
-
-        return index - 1;
+    private int getWordToBeHighlightedPosition(String originalText, String wordToBeHighlighted) {
+        String wordToBeHighlightedTrimmed = wordToBeHighlighted.trim();
+        return originalText.indexOf(wordToBeHighlightedTrimmed);
     }
-
 }
