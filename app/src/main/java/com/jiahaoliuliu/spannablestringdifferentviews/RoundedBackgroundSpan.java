@@ -40,6 +40,6 @@ public class RoundedBackgroundSpan extends ReplacementSpan {
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        return Math.round(paint.measureText(text, start, end));
+        return Math.round(paint.measureText(text, start, end) + HORIZONTAL_PADDING);
     }
 }
