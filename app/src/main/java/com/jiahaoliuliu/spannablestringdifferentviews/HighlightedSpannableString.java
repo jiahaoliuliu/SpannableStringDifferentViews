@@ -1,9 +1,8 @@
 package com.jiahaoliuliu.spannablestringdifferentviews;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
-import android.util.Log;
 
 /**
  * Created by jiahaoliuliu on 11/29/17.
@@ -26,7 +25,9 @@ import android.util.Log;
  */
 public class HighlightedSpannableString extends SpannableString {
 
-    private static final String TAG = "HighlightedSpannableString";
+    // Default values
+    private static final int DEFAULT_BACKGROUND_COLOUR = android.R.color.black;
+    private static final int DEFAULT_TEXT_COLOUR = android.R.color.white;
 
     /**
      * Inherited constructor. Do not use
@@ -38,71 +39,52 @@ public class HighlightedSpannableString extends SpannableString {
 
     public static HighlightedSpannableString create(Context context, String originalText,
                                                     String wordToBeHighLighted) {
-        return create(context, originalText, wordToBeHighLighted, android.R.color.black,
-                android.R.color.white);
+        return create(context, originalText, wordToBeHighLighted, DEFAULT_BACKGROUND_COLOUR,
+                DEFAULT_TEXT_COLOUR);
     }
 
-    @SuppressLint("LongLogTag")
     public static HighlightedSpannableString create(Context context,
-           String originalText, String wordToBeHighlighted, int highlightColour, int textColour) {
+                                                    String originalText, String wordToBeHighlighted,
+                                                    int highlightColour, int textColour) {
+        HighlightedSpannableString highlightedSpannableString =
+                new HighlightedSpannableString(originalText);
 
-        String convertedText = convertTextForHighlight(originalText, wordToBeHighlighted);
+        int highlightWordStartPosition = originalText.indexOf(wordToBeHighlighted);
 
-        if (convertedText == null) {
-            Log.e(TAG, "Error converting the text");
-            return new HighlightedSpannableString(originalText);
+        // If the text does not exist, do not do anything
+        if (highlightWordStartPosition < 0) {
+            return highlightedSpannableString;
         }
 
-        HighlightedSpannableString highlightedSpannableString =
-                new HighlightedSpannableString(convertedText);
-
-        int highlightWordStartPosition = getWordToBeHighlightedPosition(convertedText,
-                wordToBeHighlighted) - 1;
         highlightedSpannableString.setSpan(
-                new RoundedBackgroundSpan(context.getResources().getColor(highlightColour),
-                        context.getResources().getColor(textColour)), highlightWordStartPosition,
-                highlightWordStartPosition + wordToBeHighlighted.length() + 2, 0);
+                new RoundedBackgroundSpan(context,
+                        ContextCompat.getColor(context, highlightColour),
+                        ContextCompat.getColor(context, textColour)), highlightWordStartPosition,
+                highlightWordStartPosition + wordToBeHighlighted.length(), 0);
         return highlightedSpannableString;
     }
 
-    /**
-     * Convert the original text for highlight. Basically some extra space is added
-     * at the beginning at the bottom of the last word
-     * @return
-     *      The converted text to have the last word highlighted
-     */
-    private static String convertTextForHighlight(String originalText, String wordToBeHighlighted) {
+    public static HighlightedSpannableString create(Context context,
+           String originalText, String wordToBeHighlighted, int highlightColour, int textColour,
+           int horizontalPadding, int verticalPadding) {
 
-        int highlighterTextStartPosition =
-                getWordToBeHighlightedPosition(originalText, wordToBeHighlighted);
-        if (highlighterTextStartPosition < 0) {
-            return null;
+        HighlightedSpannableString highlightedSpannableString =
+                new HighlightedSpannableString(originalText);
+
+        int highlightWordStartPosition = originalText.indexOf(wordToBeHighlighted);
+
+        // If the text does not exist, do not do anything
+        if (highlightWordStartPosition < 0) {
+            return highlightedSpannableString;
         }
 
-        // Get the first part of the text
-        String convertedText =
-                originalText.substring(0, highlighterTextStartPosition);
-
-        // Add the last word and some white spaces
-        // 4 white space at the beginning = original white space + space for the margins
-        convertedText += "    ";
-
-        // Attach the highlighted text
-        convertedText += wordToBeHighlighted;
-
-        // Attach some spaces at the end
-        convertedText += "  ";
-
-        // Attach the rest of the word
-        convertedText += originalText.substring(
-                originalText.indexOf(wordToBeHighlighted) + wordToBeHighlighted.length(),
-                originalText.length());
-
-        return convertedText;
+        highlightedSpannableString.setSpan(
+                new RoundedBackgroundSpan(context,
+                        ContextCompat.getColor(context, highlightColour),
+                        ContextCompat.getColor(context, textColour), horizontalPadding,
+                        verticalPadding), highlightWordStartPosition,
+                highlightWordStartPosition + wordToBeHighlighted.length(), 0);
+        return highlightedSpannableString;
     }
 
-    private static int getWordToBeHighlightedPosition(String originalText, String wordToBeHighlighted) {
-        String wordToBeHighlightedTrimmed = wordToBeHighlighted.trim();
-        return originalText.indexOf(wordToBeHighlightedTrimmed);
-    }
 }
