@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
         TextView spannableTV = findViewById(R.id.spannable_tv);
 
         spannableTV.setText(
-                HighlightedSpannableString.create(this, ORIGINAL_TEXT, WORD_TO_BE_HIGHLIGHTED
-                        ,HIGHLIGHT_COLOR_RESOURCE, TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE
+                HighlightedSpannableString.create(this, ORIGINAL_TEXT, WORD_TO_BE_HIGHLIGHTED,
+                        HIGHLIGHT_COLOR_RESOURCE, TEXT_COLOR_HIGHLIGHTED_COLOR_RESOURCE
                 ));
     }
 }

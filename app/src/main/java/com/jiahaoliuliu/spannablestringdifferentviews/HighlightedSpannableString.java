@@ -66,7 +66,7 @@ public class HighlightedSpannableString extends SpannableString {
 
     public static HighlightedSpannableString create(Context context,
            String originalText, String wordToBeHighlighted, int highlightColour, int textColour,
-           int horizontalPadding, int verticalPadding) {
+           int cornerRadius, int horizontalPadding, int verticalPadding) {
 
         HighlightedSpannableString highlightedSpannableString =
                 new HighlightedSpannableString(originalText);
@@ -81,8 +81,8 @@ public class HighlightedSpannableString extends SpannableString {
         highlightedSpannableString.setSpan(
                 new RoundedBackgroundSpan(context,
                         ContextCompat.getColor(context, highlightColour),
-                        ContextCompat.getColor(context, textColour), horizontalPadding,
-                        verticalPadding), highlightWordStartPosition,
+                        ContextCompat.getColor(context, textColour), cornerRadius,
+                        horizontalPadding, verticalPadding), highlightWordStartPosition,
                 highlightWordStartPosition + wordToBeHighlighted.length(), 0);
         return highlightedSpannableString;
     }
